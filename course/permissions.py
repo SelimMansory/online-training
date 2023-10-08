@@ -7,8 +7,10 @@ class IsStaffViewSet(BasePermission):
         return request.user.is_authenticated
 
     def has_object_permission(self, request, view, obj):
-        if view.action in ['list', 'create', ]:
+        if view.action in ['list',]:
             return request.user.is_authenticated
+        elif view.action == 'create':
+            return request.user.group == 'user' or request.user.is_superuser
         elif view.action in ['update', 'retrieve']:
             return request.user == obj.owner or request.user.group == 'staff'
         elif view.action == 'destroy':
@@ -24,8 +26,11 @@ class IsStaff(BasePermission):
             return True
 
 
-class IsOwner(BasePermission):
+class IsUser(BasePermission):
+
+    def has_permission(self, request, view):
+        print(view)
+        return request.user.group == 'user'
 
     def has_object_permission(self, request, view, obj):
-        print(view.action)
         return request.user == obj.owner

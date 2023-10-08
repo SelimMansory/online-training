@@ -3,8 +3,6 @@ from django.db import models
 from users.models import NULLABLE, User
 
 
-# Create your models here.
-
 class Course(models.Model):
     title = models.CharField(max_length=100, verbose_name='название')
     preview = models.ImageField(verbose_name='превью', **NULLABLE)
@@ -39,7 +37,7 @@ class Lesson(models.Model):
 
 
 class Payments(models.Model):
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, **NULLABLE , verbose_name='пользователь')
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, **NULLABLE, verbose_name='пользователь')
 
     date_of_payment = models.DateField(auto_now_add=True, verbose_name='дата оплаты')
     payment_amount = models.FloatField(verbose_name='сумма оплаты')
