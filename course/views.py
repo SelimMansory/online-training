@@ -19,6 +19,13 @@ class CourseViewSet(CreateMixin, viewsets.ModelViewSet):
     permission_classes = [IsStaffViewSet]
     pagination_class = MyPagination
 
+    def get_permissions(self):
+        if self.action in ["create", "destroy"]:
+            permission_classes = [IsAuthenticated, ~IsStaff]
+        else:
+            permission_classes = [IsAuthenticated, IsStaff | IsUser]
+        return [permission() for permission in permission_classes]
+
     def list(self, request, *args, **kwargs):
         if request.user.group == 'user':
             serializer = CourseSerializer(Course.objects.filter(owner=self.request.user), many=True)
@@ -26,7 +33,6 @@ class CourseViewSet(CreateMixin, viewsets.ModelViewSet):
         else:
             serializer = CourseSerializer(Course.objects.all(), many=True)
             return Response(serializer.data)
-
 
 class LessonCreateAPIView(CreateMixin, generics.CreateAPIView):
     serializer_class = LessonSerializer
