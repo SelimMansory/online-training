@@ -9,7 +9,7 @@ from subscribe.models import SubscribeUser
 class LessonSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lesson
-        fields = '__all__'
+        exclude = ('owner', 'id',)
         validators = [URLValidator(field='video_url')]
 
 
@@ -23,7 +23,7 @@ class CourseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Course
-        fields = '__all__'
+        exclude = ('owner', 'id',)
 
 
 class PaymentsSerializer(serializers.ModelSerializer):

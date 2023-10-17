@@ -29,7 +29,6 @@ class IsStaff(BasePermission):
 class IsUser(BasePermission):
 
     def has_permission(self, request, view):
-        print(view)
         return request.user.group == 'user'
 
     def has_object_permission(self, request, view, obj):

@@ -1,6 +1,6 @@
-from django.urls import reverse
+from django.urls import reverse, resolve
 from rest_framework import status
-from rest_framework.test import APITestCase, APIClient
+from rest_framework.test import APITestCase, APIClient, APIRequestFactory
 from datetime import datetime
 from course.models import Lesson, Course, Payments
 from users.models import User
@@ -119,7 +119,7 @@ class CourseTestCase(APITestCase):
     def test_destroy_course(self):
         """ Тестирование удаление курса """
         response = self.client.delete(
-            '/course/1/'
+            reverse('course:course-delete', kwargs={'pk': 1})
         )
         self.assertEquals(
             response.status_code,
@@ -129,7 +129,7 @@ class CourseTestCase(APITestCase):
     def test_detail_course(self):
         """ Тестирование информация об курсе """
         response = self.client.get(
-            '/course/1/'
+            reverse('course:course-detail', kwargs={'pk': 1})
         )
 
         self.assertEquals(
@@ -141,7 +141,7 @@ class CourseTestCase(APITestCase):
     def test_list_course(self):
         """ Тестирование вывод списка курса """
         response = self.client.get(
-            '/course/'
+            reverse('course:course-list')
         )
         self.assertEquals(
             response.status_code,
@@ -179,7 +179,7 @@ class CourseTestCase(APITestCase):
             'owner': 1,
         }
         response = self.client.post(
-            '/course/',
+            reverse('course:course-create'),
             data=data
         )
 

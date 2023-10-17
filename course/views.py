@@ -1,6 +1,8 @@
+import datetime
+
 from django.shortcuts import render
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, generics
+from rest_framework import viewsets, generics, status
 from rest_framework.filters import OrderingFilter
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from course.models import Course, Lesson, Payments
@@ -9,6 +11,8 @@ from course.permissions import IsStaffViewSet, IsStaff, IsUser
 from course.seriliazers import CourseSerializer, LessonSerializer, PaymentsSerializer
 from course.service import CreateMixin
 from rest_framework.response import Response
+
+from course.tasks import send_an_update_mail
 
 
 # Create your views here.
@@ -33,6 +37,16 @@ class CourseViewSet(CreateMixin, viewsets.ModelViewSet):
         else:
             serializer = CourseSerializer(Course.objects.all(), many=True)
             return Response(serializer.data)
+
+    def update(self, request, *args, **kwargs):
+        data = super().retrieve(request, *args, **kwargs)
+        course = Course.objects.filter(pk=kwargs['pk']).first()
+        strtime = '%Y-%m-%d %H:%M:%S.%f'
+        time = datetime.datetime.strptime(course.last_update, strtime)
+        if course and ((datetime.datetime.now() - time) > datetime.timedelta(hours=4)):
+            course.last_update = datetime.datetime.now()
+            send_an_update_mail.delay(course)
+        return data
 
 class LessonCreateAPIView(CreateMixin, generics.CreateAPIView):
     serializer_class = LessonSerializer
