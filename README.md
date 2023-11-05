@@ -1,1 +1,7 @@
-# online-training
+Проект для продажи курсов
+---
+___
+Для запуска проекта через docker необходимо выполнить команды и заполнить файл .env
+1) > docker-compose build
+
+2) > docker-compose up
